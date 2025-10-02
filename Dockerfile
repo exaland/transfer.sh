@@ -4,17 +4,17 @@ FROM golang:${GO_VERSION}-alpine as build
 
 # Necessary to run 'go get' and to compile the linked binary
 RUN apk add git musl-dev mailcap
-
-WORKDIR /go/src/github.com/dutchcoders/transfer.sh
+WORKDIR /go/src/github.com/exaland/transfer.sh
 
 COPY go.mod go.sum ./
 
+RUN go get github.com/exaland/transfer.sh-web
 RUN go mod download
 
 COPY . .
 
 # build & install server
-RUN CGO_ENABLED=0 go build -tags netgo -ldflags "-X github.com/dutchcoders/transfer.sh/cmd.Version=$(git describe --tags) -a -s -w -extldflags '-static'" -o /go/bin/transfersh
+RUN CGO_ENABLED=0 go build -tags netgo -ldflags "-X github.com/exaland/transfer.sh/cmd.Version=$(git describe --tags) -a -s -w -extldflags '-static'" -o /go/bin/transfersh
 
 ARG PUID=5000 \
     PGID=5000 \
@@ -39,6 +39,6 @@ COPY --from=build /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/ca-certifica
 
 USER ${RUNAS}
 
-ENTRYPOINT ["/go/bin/transfersh", "--listener", ":8080"]
+ENTRYPOINT ["/go/bin/transfersh", "--listener", ":8087"]
 
-EXPOSE 8080
+EXPOSE 8087

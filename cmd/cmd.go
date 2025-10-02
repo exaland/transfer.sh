@@ -7,9 +7,9 @@ import (
 	"os"
 	"strings"
 
-	"github.com/dutchcoders/transfer.sh/server/storage"
+	"github.com/exaland/transfer.sh/server/storage"
 
-	"github.com/dutchcoders/transfer.sh/server"
+	"github.com/exaland/transfer.sh/server"
 	"github.com/fatih/color"
 	"github.com/urfave/cli/v2"
 	"google.golang.org/api/googleapi"

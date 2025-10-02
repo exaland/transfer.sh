@@ -16,6 +16,11 @@ The official position of me, @aspacca, as maintainer of the repo, is that if you
 
 ## Usage
 
+### Lanch Container
+```
+docker run -d --publish  8087:8080 dutchcoders/transfer.sh:latest --provider local --basedir /tmp/ 
+```
+
 ### Upload:
 ```bash
 $ curl -v --upload-file ./hello.txt https://transfer.sh/hello.txt
