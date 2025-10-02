@@ -18,7 +18,7 @@ The official position of me, @aspacca, as maintainer of the repo, is that if you
 
 ### Lanch Container
 ```
-docker run -d --publish  8087:8080 dutchcoders/transfer.sh:latest --provider local --basedir /tmp/ 
+docker run -d --publish  8087:8080 exaland/send:latest --provider local --basedir /tmp/ 
 ```
 
 ### Upload:
