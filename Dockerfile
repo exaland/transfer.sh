@@ -6,7 +6,7 @@ FROM golang:${GO_VERSION}-alpine as build
 RUN apk add git musl-dev mailcap
 WORKDIR /go/src/github.com/exaland/transfer.sh
 
-COPY go.mod go.sum ./
+COPY go.mod ./
 
 RUN go get github.com/exaland/transfer.sh-web
 RUN go mod download
@@ -17,9 +17,10 @@ RUN go mod tidy
 
 COPY . .
 RUN go get github.com/exaland/transfer.sh/server
+RUN go get github.com/exaland/transfer.sh/cmd
 
 # build & install server
-RUN CGO_ENABLED=0 go build -tags netgo -ldflags "-X github.com/exaland/transfer.sh/cmd.Version=$(git describe --tags) -a -s -w -extldflags '-static'" -o /go/bin/transfersh
+RUN CGO_ENABLED=0 go build -tags netgo -ldflags "-X github.com/exaland/transfer.sh/cmd.Version=1.1.0 -a -s -w -extldflags '-static'" -o /go/bin/transfersh
 
 ARG PUID=5000 \
     PGID=5000 \
