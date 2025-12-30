@@ -20,7 +20,9 @@ The official position of me, @aspacca, as maintainer of the repo, is that if you
 ```
 docker run -d --publish  8087:8080 exaland/send:latest --provider local --basedir /tmp/ 
 ```
-
+```
+docker run -it --rm -d  -v /root/transfer.sh:/root/transfer.sh -p 8087:8080   exaland/send   --web-path /root/transfer.sh/dist --provider local --basedir /root/uploads
+```
 ### Upload:
 ```bash
 $ curl -v --upload-file ./hello.txt https://transfer.sh/hello.txt
