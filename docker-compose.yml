@@ -1,0 +1,18 @@
+version: '3'
+
+services:
+  send:
+    image: exaland/send:latest
+    container_name: send
+    restart: unless-stopped
+    ports:
+      - "8087:8080"
+    volumes:
+      - /root/transfer.sh:/root/transfer.sh
+    command: >
+      --web-path /root/transfer.sh/dist
+      --provider s3
+      --bucket exalands3
+      --s3-region us-east-1
+      --aws-access-key ${AWS_ACCESS_KEY}
+      --aws-secret-key ${AWS_SECRET_KEY}
