@@ -2,6 +2,9 @@ version: '3'
 
 services:
   send:
+    # build: 
+    #   context: .
+    #   dockerfile: Dockerfile
     image: exaland/send:latest
     container_name: send
     restart: unless-stopped
@@ -11,8 +14,8 @@ services:
       - /root/transfer.sh:/root/transfer.sh
     command: >
       --web-path /root/transfer.sh/dist
-      --provider s3
-      --bucket exalands3
-      --s3-region us-east-1
+      --provider storj
+      --storj-access 12TgG3LTsNpVbvZaJNKYMBihZ2QmQeKq2F7XZUf5WCvYib3epS3CkCN9oYsTUa7Cn5rp5z7uHPb81Sf1fhV8Kh4jRvjw9DQWHzCirvdVhtQB2JeR5t3pqso73P7e6iJuswQK5YP24kp53v52PRaaQACvEwgd6JeEqhSNkNj7PeZWHKQ5xmW77tVvdfhFnT1DUN48ERT5eoXYPy7p8sKdSTXpRhqJJ4HbWg46m2FPnwmX3tGQcs5dKZkqDxmGDnj6s8nGxFCucTiTDGNtuH25Pyzk6f8cKN27uoVo
+      --storj-bucket directappli
       --aws-access-key ${AWS_ACCESS_KEY}
       --aws-secret-key ${AWS_SECRET_KEY}

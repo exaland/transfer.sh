@@ -171,6 +171,7 @@ func (s *S3Storage) Put(ctx context.Context, token string, filename string, read
 		Body:        reader,
 		Expires:     expire,
 		ContentType: aws.String(contentType),
+		ACL:         types.ObjectCannedACLPublicRead,
 	})
 
 	return
