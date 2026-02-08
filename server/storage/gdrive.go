@@ -352,8 +352,6 @@ func getGDriveTokenFromWeb(ctx context.Context, config *oauth2.Config, logger *l
 
 	// Prefer non-interactive input when running in containers/CI.
 	if envCode := strings.TrimSpace(os.Getenv("GDRIVE_AUTH_CODE")); envCode != "" {
-		// Allow simple quoting around the code
-		envCode = strings.Trim(envCode, " \t\n\r\"'")
 		tok, err := config.Exchange(ctx, envCode)
 		if err != nil {
 			logger.Fatalf("Unable to retrieve token using GDRIVE_AUTH_CODE: %v", err)
@@ -362,28 +360,11 @@ func getGDriveTokenFromWeb(ctx context.Context, config *oauth2.Config, logger *l
 	}
 
 	if codeFile := strings.TrimSpace(os.Getenv("GDRIVE_AUTH_CODE_FILE")); codeFile != "" {
-		f, err := os.Open(codeFile)
-		defer CloseCheck(f)
+		b, err := os.ReadFile(codeFile)
 		if err != nil {
 			logger.Fatalf("Unable to read GDRIVE_AUTH_CODE_FILE '%s': %v", codeFile, err)
 		}
-		// Extract first non-empty, non-comment line as the code
-		var fileCode string
-		scanner := bufio.NewScanner(f)
-		for scanner.Scan() {
-			line := strings.TrimSpace(scanner.Text())
-			if line == "" || strings.HasPrefix(line, "#") {
-				continue
-			}
-			fileCode = strings.Trim(line, " \t\n\r\"'")
-			break
-		}
-		if err := scanner.Err(); err != nil {
-			logger.Fatalf("Error reading GDRIVE_AUTH_CODE_FILE: %v", err)
-		}
-		if fileCode == "" {
-			logger.Fatalf("No auth code found in GDRIVE_AUTH_CODE_FILE '%s'", codeFile)
-		}
+		fileCode := strings.TrimSpace(string(b))
 		tok, err := config.Exchange(ctx, fileCode)
 		if err != nil {
 			logger.Fatalf("Unable to retrieve token using code from file: %v", err)
@@ -399,8 +380,7 @@ func getGDriveTokenFromWeb(ctx context.Context, config *oauth2.Config, logger *l
 		logger.Fatalf("Provide the code via env 'GDRIVE_AUTH_CODE' or file 'GDRIVE_AUTH_CODE_FILE'.")
 	}
 
-	authCode = strings.Trim(authCode, " \t\n\r\"'")
-	tok, err := config.Exchange(ctx, authCode)
+	tok, err := config.Exchange(ctx, strings.TrimSpace(authCode))
 	if err != nil {
 		logger.Fatalf("Unable to retrieve token from web %v", err)
 	}
