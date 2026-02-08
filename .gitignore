@@ -23,3 +23,6 @@ transfersh-server/run.sh
 
 !.github/build/
 .env
+token.json
+gdrive.json
+gdrive_code.txt

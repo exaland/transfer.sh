@@ -1,18 +1,24 @@
-version: '3'
 
 services:
   send:
-    image: exaland/send:latest
+    build: 
+        context: .
+        dockerfile: Dockerfile
     container_name: send
     restart: unless-stopped
     ports:
       - "8087:8080"
+    environment:
+      - GDRIVE_AUTH_CODE_FILE=/root/transfer.sh/gdrive_code.txt
     volumes:
       - /root/transfer.sh:/root/transfer.sh
     command: >
       --web-path /root/transfer.sh/dist
-      --provider s3
-      --bucket exalands3
-      --s3-region us-east-1
+      --provider gdrive
+      --gdrive-client-json-filepath /root/transfer.sh/gdrive.json
+      --basedir /root/transfer.sh/files
+      --gdrive-local-config-path /root/transfer.sh/gdrive_config
+      --storj-access 12TgG3LTsNpVbvZaJNKYMBihZ2QmQeKq2F7XZUf5WCvYib3epS3CkCN9oYsTUa7Cn5rp5z7uHPb81Sf1fhV8Kh4jRvjw9DQWHzCirvdVhf2xaK9b2MCXJ3QFZUoqXJrKkK7pUZdtyrNDs7L6Uuj7cffhKHvEcHh7yGJEis3CTFy165odNu23hryB6EMBvj9omvUzXH2y29iFBGbavCqSn7wQ7Tx7b5QVyzkabm9E15TFeg7YhhiZXW26XxQjbtWiQhgAzjsKg4kAcyu8epAPVDHx572ZY2kc67fY
+      --storj-bucket directappli
       --aws-access-key ${AWS_ACCESS_KEY}
       --aws-secret-key ${AWS_SECRET_KEY}

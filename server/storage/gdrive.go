@@ -348,15 +348,39 @@ func getGDriveClient(ctx context.Context, config *oauth2.Config, localConfigPath
 // Request a token from the web, then returns the retrieved token.
 func getGDriveTokenFromWeb(ctx context.Context, config *oauth2.Config, logger *log.Logger) *oauth2.Token {
 	authURL := config.AuthCodeURL("state-token", oauth2.AccessTypeOffline)
-	fmt.Printf("Go to the following link in your browser then type the "+
-		"authorization code: \n%v\n", authURL)
+	fmt.Printf("Go to the following link in your browser then authorize access:\n%v\n", authURL)
 
-	var authCode string
-	if _, err := fmt.Scan(&authCode); err != nil {
-		logger.Fatalf("Unable to read authorization code %v", err)
+	// Prefer non-interactive input when running in containers/CI.
+	if envCode := strings.TrimSpace(os.Getenv("GDRIVE_AUTH_CODE")); envCode != "" {
+		tok, err := config.Exchange(ctx, envCode)
+		if err != nil {
+			logger.Fatalf("Unable to retrieve token using GDRIVE_AUTH_CODE: %v", err)
+		}
+		return tok
 	}
 
-	tok, err := config.Exchange(ctx, authCode)
+	if codeFile := strings.TrimSpace(os.Getenv("GDRIVE_AUTH_CODE_FILE")); codeFile != "" {
+		b, err := os.ReadFile(codeFile)
+		if err != nil {
+			logger.Fatalf("Unable to read GDRIVE_AUTH_CODE_FILE '%s': %v", codeFile, err)
+		}
+		fileCode := strings.TrimSpace(string(b))
+		tok, err := config.Exchange(ctx, fileCode)
+		if err != nil {
+			logger.Fatalf("Unable to retrieve token using code from file: %v", err)
+		}
+		return tok
+	}
+
+	// Fallback to interactive input.
+	fmt.Print("Enter authorization code: ")
+	var authCode string
+	if _, err := fmt.Scan(&authCode); err != nil {
+		logger.Printf("Unable to read authorization code: %v", err)
+		logger.Fatalf("Provide the code via env 'GDRIVE_AUTH_CODE' or file 'GDRIVE_AUTH_CODE_FILE'.")
+	}
+
+	tok, err := config.Exchange(ctx, strings.TrimSpace(authCode))
 	if err != nil {
 		logger.Fatalf("Unable to retrieve token from web %v", err)
 	}
